@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+//Struct para guardar o ficheiro map 
+struct map {
+    int origem;
+    int destino;
+    char trans[20];
+    int tempo;
+    int custo;
+    int inicio;
+    int fim;
+    int period;
+};
+
+//Struct para guardar o ficheiro quest
+struct quest {
+    char task[64];
+    int torigem;
+    int tdestino;
+};
+
+        int task01(struct map *lista, int n, int origem, int destino) {
+            int count = 0;
+            for(int i = 0; i < n; i++){
+                if ((lista[i].origem == origem && lista[i].destino == destino) || (lista[i].origem == destino && lista[i].destino == origem)) {
+            count++;
+                }
+           
+            }
+            return count;
+        }
+
+int main () {
+
+    //abrir o ficheiro mapa em read mode em fptr
+    FILE *fptr; 
+    fptr = fopen("Enunciado_mapa.map", "r");
+
+    //ler o numero de linhas e colunas
+    int linhas, colunas;
+    fscanf(fptr, "%d %d", &linhas, &colunas);
+
+    struct map lista[100]; //Criar uma variável struct de map chamada lista
+    int n = 0;
+
+    while (fscanf(fptr, "%d %d %s %d %d %d %d %d", 
+        &lista[n].origem,
+        &lista[n].destino,
+        lista[n].trans,
+        &lista[n].tempo,
+        &lista[n].custo,
+        &lista[n].inicio,
+        &lista[n].fim,
+        &lista[n].period) == 8) {
+            n++;
+        }
+    
+    
+        
+    //abrir o ficheiro quest em read mode em fptr2
+    FILE *fptr2;
+    fptr2 = fopen("Enunciado_tasks_16.quests", "r");
+    if (!fptr2) {
+        perror("Erro ao abrir Enunciado_tasks_16.quests");
+        return 1;
+    }
+
+    struct quest lista2[100]; //Criar uma variável struct de quest chamada lista2
+    int m = 0;
+
+    while (fscanf(fptr2, "%63s %d %d",
+        lista2[m].task,
+        &lista2[m].torigem,
+        &lista2[m].tdestino) == 3){
+            m++;
+        }
+
+        if (strcmp(lista2[0].task, "Task1") == 0){
+            int viagens = task01(lista, n, lista2[0].torigem, lista2[0].tdestino);
+            printf("Entre %d e %d existem %d viagens directas.\n", lista2[0].torigem, lista2[0].tdestino, viagens);
+        }
+    
+    return 0;
+}
