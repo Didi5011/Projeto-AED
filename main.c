@@ -21,7 +21,7 @@ struct quest {
     int tdestino;
     int thora;
 };
-
+        /*Função da task1*/
         int task01(struct map *lista, int n, int origem, int destino) {
             int count = 0;
             for(int i = 0; i < n; i++){
@@ -32,31 +32,31 @@ struct quest {
             }
             return count;
         }
-
+        /*Função da task2*/
         int task02(struct map *lista, int n, int origem, int destino){
-            int min = 0;
+            int min = -1;
             for(int i = 0; i < n; i++) {
                 if ((lista[i].origem == origem && lista[i].destino == destino) || (lista[i].origem == destino && lista[i].destino == origem)) {
-                    if (min == 0 || lista[i].tempo < min) {
+                    if (min == -1 || lista[i].tempo < min) {
                         min = lista[i].tempo;
                     }
                 }
             }
             return min;
         }
-
+        /*Função da task3*/
         int task03(struct map *lista, int n, int origem, int destino){
-            int preço = 0;
+            int preço = -1;
             for(int i = 0; i < n; i++){
                 if((lista[i].origem == origem && lista[i].destino == destino) || (lista[i].origem == destino && lista[i].destino == origem)){
-                    if (preço == 0 || lista[i].custo < preço ){
+                    if (preço == -1 || lista[i].custo < preço ){
                         preço = lista[i].custo;
                     }
                 }
             }
             return preço;
         }
-
+        /*Função da task4*/
         int task04(struct map *lista, int n, int origem, int destino, int partida){
             int cedo = -1;
             for(int i = 0; i < n; i++){
@@ -113,49 +113,99 @@ int main () {
     struct quest lista2[100]; /*Criar uma variável struct de quest chamada lista2*/
     int m = 0;
 
-    while (fscanf(fptr2, "%63s %d %d %d",
-        lista2[m].task,
-        &lista2[m].torigem,
-        &lista2[m].tdestino,
-        &lista2[m].thora) == 4){
-            m++;
-        }
-
-        if (strcmp(lista2[0].task, "Task1") == 0){
-            int viagens = task01(lista, n, lista2[0].torigem, lista2[0].tdestino);
-            printf("Entre %d e %d existem %d viagens directas.\n", lista2[0].torigem, lista2[0].tdestino, viagens);
-        }
-
-        else if(strcmp(lista2[0].task, "Task2") == 0){
-            int menor = task02(lista, n, lista2[0].torigem, lista2[0].tdestino);
-            if (menor == -1) {
-            printf("Não existe ligação direta entre %d e %d\n", lista2[0].torigem, lista2[0].tdestino);
-}       else {
-        printf("Menor tempo entre %d e %d = %d\n", lista2[0].torigem, lista2[0].tdestino, menor);
+    while (1) {
+    int r = fscanf(fptr2, "%63s %d %d %d",
+                   lista2[m].task,
+                   &lista2[m].torigem,
+                   &lista2[m].tdestino,
+                   &lista2[m].thora);
+    if (r == EOF) break;
+    if (r == 3) {
+        lista2[m].thora = 0; /* thora não fornecida na linha */
+        m++;
+    } else if (r == 4) {
+        m++;
+    } else {
+        /* linha mal-formada: consumir até fim da linha e ignorar */
+        int c;
+        while ((c = fgetc(fptr2)) != '\n' && c != EOF) { }
+    }
+    /*evitar overflow do array */
+    if (m >= 100) break;
 }
 
-        }
 
-        else if(strcmp(lista2[0].task, "Task3") == 0){
-            int menor_custo = task03(lista, n, lista2[0].torigem, lista2[0].tdestino);
-            if (menor_custo == -1) {
-            printf("Não existe ligação direta entre %d e %d\n", lista2[0].torigem, lista2[0].tdestino);
-}       else {
-        printf("Menor custo entre %d e %d = %d\n",lista2[0].torigem, lista2[0].tdestino, menor_custo);
+    FILE *fptr3 = fopen("Enunciado_tasks_16.results", "w");
+    if (fptr3 == NULL) {
+        perror("Erro a criar Enunciado_tasks_16.results");
+        return 1;
 }
 
-        }
+    for (int i = 0; i < m; i++) {
+    if (strcmp(lista2[i].task, "Task1") == 0) {
+        int viagens = task01(lista, n, lista2[i].torigem, lista2[i].tdestino);
+        fprintf(fptr3, "%s %d %d -> %d viagens directas\n",
+                lista2[i].task,
+                lista2[i].torigem,
+                lista2[i].tdestino,
+                viagens);
+    }
 
-        else if(strcmp(lista2[0].task, "Task4") == 0){
-            int menor_hora = task04(lista, n, lista2[0].torigem, lista2[0].tdestino, lista2[0].thora);
-            if (menor_hora == -1) {
-            printf("Não existe ligação direta entre %d e %d\n", lista2[0].torigem, lista2[0].tdestino);
-}       else {
-        printf("Hora mais cedo %d e %d = %d\n",lista2[0].torigem, lista2[0].tdestino, menor_hora);
-
+    else if (strcmp(lista2[i].task, "Task2") == 0) {
+        int menor = task02(lista, n, lista2[i].torigem, lista2[i].tdestino);
+        if (menor == -1) {
+            fprintf(fptr3, "%s %d %d -> nenhuma ligação direta\n",
+                    lista2[i].task,
+                    lista2[i].torigem,
+                    lista2[i].tdestino);
+        } else {
+            fprintf(fptr3, "%s %d %d -> menor tempo = %d\n",
+                    lista2[i].task,
+                    lista2[i].torigem,
+                    lista2[i].tdestino,
+                    menor);
         }
     }
 
+    else if (strcmp(lista2[i].task, "Task3") == 0) {
+        int menor_custo = task03(lista, n, lista2[i].torigem, lista2[i].tdestino);
+        if (menor_custo == -1) {
+            fprintf(fptr3, "%s %d %d -> nenhuma ligação direta\n",
+                    lista2[i].task,
+                    lista2[i].torigem,
+                    lista2[i].tdestino);
+        } else {
+            fprintf(fptr3, "%s %d %d -> menor custo = %d\n",
+                    lista2[i].task,
+                    lista2[i].torigem,
+                    lista2[i].tdestino,
+                    menor_custo);
+        }
+    }
+
+    else if (strcmp(lista2[i].task, "Task4") == 0) {
+        int menor_hora = task04(lista, n, lista2[i].torigem, lista2[i].tdestino, lista2[i].thora);
+        if (menor_hora == -1) {
+            fprintf(fptr3, "%s %d %d %d -> nenhuma ligação direta\n",
+                    lista2[i].task,
+                    lista2[i].torigem,
+                    lista2[i].tdestino,
+                    lista2[i].thora);
+        } else {
+            fprintf(fptr3, "%s %d %d %d -> hora mais cedo = %d\n",
+                    lista2[i].task,
+                    lista2[i].torigem,
+                    lista2[i].tdestino,
+                    lista2[i].thora,
+                    menor_hora);
+        }
+    }
+}
+
+fclose(fptr3);
+
+    return 0;
+}
 
     return 0;
 }
