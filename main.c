@@ -43,14 +43,22 @@ struct quest {
 };
         /*Função da task1*/
         int task01(struct map *lista, int n, int origem, int destino) {
-            int count = 0;
+            int count = 0;        /*conta os meios de transporte*/
+            int comboio=0, autocarro=0; aviao=0, barco=0;
+            
             for(int i = 0; i < n; i++){
-                if ((lista[i].origem == origem && lista[i].destino == destino) || (lista[i].origem == destino && lista[i].destino == origem)) {
-            count++;
-                }
+                if ((lista[i].origem == origem && lista[i].destino == destino) ||
+                    (lista[i].origem == destino && lista[i].destino == origem)) {
+             if(strcmp(lista[i].trans,"comboio")==0)comboio=1;
+             if(strcmp(lista[i].trans,"autocarro")==0)autocarro=1;
+             if(strcmp(lista[i].trans,"aviao")==0)aviao=1;
+             if(strcmp(lista[i].trans,"barco")==0)barco=1;
+                } 
             }
+            count=comboio+autocarro+aviao+barco;
             return count;
         }
+
 
         /*Função da task2*/
         int task02(struct map *lista, int n, int origem, int destino){
@@ -97,6 +105,11 @@ struct quest {
       int intermedias[20];            /*Lista de viagens que partem da origem*/
       int n_intermedias = 0;
 
+    /* Caso nao existam ligacoes intermedias*/
+    if(origem <= 0 && destino <= 0){
+        return -1;
+    }
+    
     /* Procura todas as viagens que incluam a origem de que estamos a procura*/
     for (int i = 0; i < n; i++) {
         if (lista[i].origem == origem) {
@@ -107,21 +120,21 @@ struct quest {
             n_intermedias++;
         }
     }
-  }
-}
+
     /* Para cada cidade intermedia*/
     for (int i = 0; i < n_intermedias; i++) {
         
         /*Procura se ha alguma ligacao da via intermedia com o destino de que estamos a procura*/
         for (int j = 0; j < n; j++) {
-            if (lista[i].origem == intermedias[i] && lista[i].destino == destino ||
-                lista[i].destino == intermedias[i] && lista[i].origem == destino) {
+            if (lista[j].origem == intermedias[i] && lista[j].destino == destino ||
+                lista[j].destino == intermedias[i] && lista[j].origem == destino) {
                 return 1;
             }
         }
     }
 
-    return -1;    
+    return 0;    
+}
 
 
 int main () {
@@ -148,8 +161,6 @@ int main () {
         &lista[n].period) == 8) {
             n++;
         }
-    
-    
         
     /*abrir o ficheiro quest em read mode em fptr2*/
     FILE *fptr2;
@@ -159,7 +170,7 @@ int main () {
         return 1;
     }
 
-    struct quest lista2[100]; /*Criar uma variável struct de quest chamada lista2*/
+    struct quest lista2[100]; /*Cria uma variável struct de quest chamada lista2*/
     int m = 0;
 
     while (1) {
@@ -168,7 +179,8 @@ int main () {
                    &lista2[m].torigem,
                    &lista2[m].tdestino,
                    &lista2[m].thora);
-    if (r == EOF) break;
+    if (r == EOF) 
+        break;
     if (r == 3) {
         lista2[m].thora = 0; /* thora não fornecida na linha */
         m++;
@@ -182,7 +194,6 @@ int main () {
     /*evitar overflow do array */
     if (m >= 100) break;
 }
-
 
     FILE *fptr3 = fopen("Enunciado_tasks_16.results", "w");
     if (fptr3 == NULL) {
@@ -249,12 +260,24 @@ int main () {
                     menor_hora);
         }
     }
+         else if (strcmp(lista2[i].task, "Task5") == 0) {
+        int viaC = task05(lista, n, lista2[i].torigem, lista2[i].tdestino, lista2[i].thora);
+        if (viaC == -1) {
+            fprintf(fptr3, "%s %d %d %d -> nenhuma via alternativa encontrada\n",
+                    lista2[i].task,
+                    lista2[i].torigem,
+                    lista2[i].tdestino);
+        } else {
+            fprintf(fptr3, "%s %d %d %d -> via alternativa = %d\n",
+                    lista2[i].task,
+                    lista2[i].torigem,
+                    lista2[i].tdestino,
+                    viaC);
+        }
 }
 
 fclose(fptr3);
-
-    return 0;
-}
-
+fclose(ftr2);
+fclose(ftr);
     return 0;
 }
