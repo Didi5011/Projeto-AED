@@ -32,15 +32,30 @@ struct quest {
             return count;
         }
 
+        int task02(struct map *lista, int n, int origem, int destino){
+            int min = 0;
+            for (int i = 0; i < n; i++) {
+        if ((lista[i].origem == origem && lista[i].destino == destino) || (lista[i].origem == destino && lista[i].destino == origem)) {
+            if (min == 0 || lista[i].tempo < min) {
+                min = lista[i].tempo;
+            }
+        }
+    }
+            return min;
+}
+        
+
+
+
 int main () {
 
     //abrir o ficheiro mapa em read mode em fptr
     FILE *fptr; 
     fptr = fopen("Enunciado_mapa.map", "r");
 
-    //ler o numero de linhas e colunas
-    int linhas, colunas;
-    fscanf(fptr, "%d %d", &linhas, &colunas);
+    //ler o numero de cidades e ligações
+    int cidades, ligacoes;
+    fscanf(fptr, "%d %d", &cidades, &ligacoes);
 
     struct map lista[100]; //Criar uma variável struct de map chamada lista
     int n = 0;
@@ -81,6 +96,17 @@ int main () {
             int viagens = task01(lista, n, lista2[0].torigem, lista2[0].tdestino);
             printf("Entre %d e %d existem %d viagens directas.\n", lista2[0].torigem, lista2[0].tdestino, viagens);
         }
-    
+
+        else if(strcmp(lista2[0].task, "Task2") == 0){
+            int menor = task02(lista, n, lista2[0].torigem, lista2[0].tdestino);
+            if (menor == -1) {
+            printf("Não existe ligação direta entre %d e %d\n", lista2[0].torigem, lista2[0].tdestino);
+}       else {
+        printf("Menor tempo entre %d e %d = %d\n", lista2[0].torigem, lista2[0].tdestino, menor);
+}
+
+        }
+
+
     return 0;
 }
