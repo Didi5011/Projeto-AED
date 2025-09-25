@@ -19,6 +19,7 @@ struct quest {
     char task[64];
     int torigem;
     int tdestino;
+    int thora;
 };
 
         int task01(struct map *lista, int n, int origem, int destino) {
@@ -55,6 +56,21 @@ struct quest {
             }
             return preço;
         }
+
+        int task04(struct map *lista, int n, int origem, int destino, int partida){
+            int cedo = -1;
+            for(int i = 0; i < n; i++){
+                if((lista[i].origem == origem && lista[i].destino == destino) || (lista[i].origem == destino && lista[i].destino == origem)){
+                    int inicio = lista[i].inicio;
+            if (inicio >= partida) {
+                if (cedo == -1 || inicio < cedo) {
+                    cedo = inicio;
+                }
+            }
+        }
+    }
+    return cedo;
+}
         
 
 
@@ -69,7 +85,7 @@ int main () {
     int cidades, ligacoes;
     fscanf(fptr, "%d %d", &cidades, &ligacoes);
 
-    struct map lista[100]; //Criar uma variável struct de map chamada lista
+    struct map lista[100]; /*Criar uma variável struct de map chamada lista*/
     int n = 0;
 
     while (fscanf(fptr, "%d %d %s %d %d %d %d %d", 
@@ -86,7 +102,7 @@ int main () {
     
     
         
-    //abrir o ficheiro quest em read mode em fptr2
+    /*abrir o ficheiro quest em read mode em fptr2*/
     FILE *fptr2;
     fptr2 = fopen("Enunciado_tasks_16.quests", "r");
     if (!fptr2) {
@@ -94,13 +110,14 @@ int main () {
         return 1;
     }
 
-    struct quest lista2[100]; //Criar uma variável struct de quest chamada lista2
+    struct quest lista2[100]; /*Criar uma variável struct de quest chamada lista2*/
     int m = 0;
 
-    while (fscanf(fptr2, "%63s %d %d",
+    while (fscanf(fptr2, "%63s %d %d %d",
         lista2[m].task,
         &lista2[m].torigem,
-        &lista2[m].tdestino) == 3){
+        &lista2[m].tdestino,
+        &lista2[m].thora) == 4){
             m++;
         }
 
@@ -128,6 +145,16 @@ int main () {
 }
 
         }
+
+        else if(strcmp(lista2[0].task, "Task4") == 0){
+            int menor_hora = task04(lista, n, lista2[0].torigem, lista2[0].tdestino, lista2[0].thora);
+            if (menor_hora == -1) {
+            printf("Não existe ligação direta entre %d e %d\n", lista2[0].torigem, lista2[0].tdestino);
+}       else {
+        printf("Hora mais cedo %d e %d = %d\n",lista2[0].torigem, lista2[0].tdestino, menor_hora);
+
+        }
+    }
 
 
     return 0;
