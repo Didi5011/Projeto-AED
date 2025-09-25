@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-//Struct para guardar o ficheiro map 
+/*Struct para guardar o ficheiro map*/
 struct map {
     int origem;
     int destino;
@@ -14,7 +14,7 @@ struct map {
     int period;
 };
 
-//Struct para guardar o ficheiro quest
+/*Struct para guardar o ficheiro quest*/
 struct quest {
     char task[64];
     int torigem;
@@ -34,26 +34,38 @@ struct quest {
 
         int task02(struct map *lista, int n, int origem, int destino){
             int min = 0;
-            for (int i = 0; i < n; i++) {
-        if ((lista[i].origem == origem && lista[i].destino == destino) || (lista[i].origem == destino && lista[i].destino == origem)) {
-            if (min == 0 || lista[i].tempo < min) {
-                min = lista[i].tempo;
+            for(int i = 0; i < n; i++) {
+                if ((lista[i].origem == origem && lista[i].destino == destino) || (lista[i].origem == destino && lista[i].destino == origem)) {
+                    if (min == 0 || lista[i].tempo < min) {
+                        min = lista[i].tempo;
+                    }
+                }
             }
-        }
-    }
             return min;
-}
+        }
+
+        int task03(struct map *lista, int n, int origem, int destino){
+            int preço = 0;
+            for(int i = 0; i < n; i++){
+                if((lista[i].origem == origem && lista[i].destino == destino) || (lista[i].origem == destino && lista[i].destino == origem)){
+                    if (preço == 0 || lista[i].custo < preço ){
+                        preço = lista[i].custo;
+                    }
+                }
+            }
+            return preço;
+        }
         
 
 
 
 int main () {
 
-    //abrir o ficheiro mapa em read mode em fptr
+    /*abrir o ficheiro mapa em read mode em fptr*/
     FILE *fptr; 
     fptr = fopen("Enunciado_mapa.map", "r");
 
-    //ler o numero de cidades e ligações
+    /*ler o numero de cidades e ligações*/
     int cidades, ligacoes;
     fscanf(fptr, "%d %d", &cidades, &ligacoes);
 
@@ -103,6 +115,16 @@ int main () {
             printf("Não existe ligação direta entre %d e %d\n", lista2[0].torigem, lista2[0].tdestino);
 }       else {
         printf("Menor tempo entre %d e %d = %d\n", lista2[0].torigem, lista2[0].tdestino, menor);
+}
+
+        }
+
+        else if(strcmp(lista2[0].task, "Task3") == 0){
+            int menor_custo = task03(lista, n, lista2[0].torigem, lista2[0].tdestino);
+            if (menor_custo == -1) {
+            printf("Não existe ligação direta entre %d e %d\n", lista2[0].torigem, lista2[0].tdestino);
+}       else {
+        printf("Menor custo entre %d e %d = %d\n",lista2[0].torigem, lista2[0].tdestino, menor_custo);
 }
 
         }
